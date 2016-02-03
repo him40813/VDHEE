@@ -13,8 +13,36 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    videoprocess.cpp \
+    bfm.cpp \
+    tools.cpp \
+    display.cpp \
+    ffm.cpp \
+    dialogrange.cpp \
+    qlabelclick.cpp \
+    cameracalibrator.cpp \
+    settings.cpp \
+    calibrater.cpp
+INCLUDEPATH += C:/opencv/build2/install/include
+LIBS += "C:/opencv/build2/bin/*.dll"
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    bfm.h \
+    videoProcess.h \
+    tools.h \
+    display.h \
+    ffm.h \
+    dialogrange.h \
+    qlabelclick.h \
+    settings.h \
+    calibrater.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    dialogrange.ui \
+    calibratedialog.ui
+
+
+
+
+
