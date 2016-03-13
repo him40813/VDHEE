@@ -33,7 +33,7 @@ void videoProcess::base(){
     //http://stackoverflow.com/questions/11543298/qt-opencv-displaying-images-on-qlabel
 
         dr.show();
-        dr.setImageMat(realFrame);
+        dr.setImageMat(realFrame,vid);
         p=true;
     }
 

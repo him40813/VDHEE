@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>1000</x>
-     <y>320</y>
+     <y>620</y>
      <width>171</width>
      <height>32</height>
     </rect>
@@ -95,9 +95,12 @@
     <rect>
      <x>1000</x>
      <y>90</y>
-     <width>131</width>
+     <width>41</width>
      <height>25</height>
     </rect>
+   </property>
+   <property name="text">
+    <string>0</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="textM">
@@ -105,9 +108,12 @@
     <rect>
      <x>1000</x>
      <y>170</y>
-     <width>131</width>
+     <width>41</width>
      <height>25</height>
     </rect>
+   </property>
+   <property name="text">
+    <string>50</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="textL">
@@ -115,9 +121,12 @@
     <rect>
      <x>1000</x>
      <y>250</y>
-     <width>131</width>
+     <width>41</width>
      <height>25</height>
     </rect>
+   </property>
+   <property name="text">
+    <string>100</string>
    </property>
   </widget>
   <widget class="QLabel" name="mLabelH">
@@ -238,6 +247,97 @@
    </property>
    <property name="text">
     <string>Calibrate Camera</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="capButton">
+   <property name="geometry">
+    <rect>
+     <x>1000</x>
+     <y>450</y>
+     <width>171</width>
+     <height>34</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Capture Frame</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="textH_2">
+   <property name="geometry">
+    <rect>
+     <x>1050</x>
+     <y>90</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="textH_3">
+   <property name="geometry">
+    <rect>
+     <x>1100</x>
+     <y>90</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="textM_2">
+   <property name="geometry">
+    <rect>
+     <x>1050</x>
+     <y>170</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="textM_3">
+   <property name="geometry">
+    <rect>
+     <x>1100</x>
+     <y>170</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="textL_2">
+   <property name="geometry">
+    <rect>
+     <x>1050</x>
+     <y>250</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="textL_3">
+   <property name="geometry">
+    <rect>
+     <x>1100</x>
+     <y>250</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>0</string>
    </property>
   </widget>
  </widget>

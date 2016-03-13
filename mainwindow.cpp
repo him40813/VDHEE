@@ -30,7 +30,7 @@ void MainWindow::on_choose_clicked()
 
     if (fileNameStr.compare("")){
         //Get Video Source
-        cv::VideoCapture vid(fileNameStr);
+        cv::VideoCapture vid(1);
 
         vidUIChange(true);
         //reCalculate R and D for resolution

@@ -27,6 +27,7 @@ SOURCES += main.cpp\
 INCLUDEPATH += C:/opencv/build2/install/include
 LIBS += "C:/opencv/build2/bin/*.dll"
 
+
 HEADERS  += mainwindow.h \
     bfm.h \
     videoProcess.h \
