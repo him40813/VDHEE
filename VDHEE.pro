@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     qlabelclick.cpp \
     cameracalibrator.cpp \
     settings.cpp \
-    calibrater.cpp
+    calibrater.cpp \
+    groundplane.cpp
 INCLUDEPATH += C:/opencv/build2/install/include
 LIBS += "C:/opencv/build2/bin/*.dll"
 
@@ -37,7 +38,8 @@ HEADERS  += mainwindow.h \
     dialogrange.h \
     qlabelclick.h \
     settings.h \
-    calibrater.h
+    calibrater.h \
+    groundplane.h
 
 FORMS    += mainwindow.ui \
     dialogrange.ui \

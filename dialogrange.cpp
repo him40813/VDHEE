@@ -10,8 +10,8 @@ DialogRange::DialogRange(QWidget *parent) :
     x=0;
     y=0;
     z=0;
-    eachDis=25;//centimetre
-    size1=3;//number in 1 line
+    eachDis=100;//centimetre
+    size1=2;//number in 1 line
     size2=3;//number of lines
 }
 
@@ -123,9 +123,16 @@ void DialogRange::on_cdButton_clicked()
     Mat rvec,tvec;
 
     vector<Point3f> corner3d;
-    for (int i=size2-1;i>=0;i--){
-        for(int j=0;j<size2;j++){
-            corner3d.push_back(Point3f(i*25,j*25,0));
+//    for (int i=size2-1;i>=0;i--){
+//        for(int j=0;j<size1;j++){
+//            corner3d.push_back(Point3f(i*25,j*25,0));
+
+//        }
+//    }
+
+    for (int i=0;i<size2;i++){
+        for(int j=size1-1;j>=0;j--){
+            corner3d.push_back(Point3f(i*eachDis,j*eachDis,0));
 
         }
     }
@@ -189,8 +196,17 @@ void DialogRange::on_cdButton_clicked()
     Mat temptest;
 
     Mat ttt1 = (Mat_<double>(3,1) << corners[0].x, corners[0].y,1);
+    Mat ttt2 = (Mat_<double>(3,1) << corners[1].x, corners[1].y,1);
     ttt1 = cm.inv()*ttt1;
+    ttt2 = cm.inv()*ttt2;
+    cout<<corners[0]<<endl;
+    cout<<d/(a*ttt1.at<double>(0)+b*ttt1.at<double>(1)+c*ttt1.at<double>(2))*ttt1.at<double>(0)<<endl;
+    cout<<d/(a*ttt1.at<double>(0)+b*ttt1.at<double>(1)+c*ttt1.at<double>(2))*ttt1.at<double>(1)<<endl;
     cout<<d/(a*ttt1.at<double>(0)+b*ttt1.at<double>(1)+c*ttt1.at<double>(2))<<endl;
+    cout<<corners[1]<<endl;
+    cout<<d/(a*ttt2.at<double>(0)+b*ttt2.at<double>(1)+c*ttt2.at<double>(2))*ttt2.at<double>(0)<<endl;
+    cout<<d/(a*ttt2.at<double>(0)+b*ttt2.at<double>(1)+c*ttt2.at<double>(2))*ttt2.at<double>(1)<<endl;
+    cout<<d/(a*ttt2.at<double>(0)+b*ttt2.at<double>(1)+c*ttt2.at<double>(2))<<endl;
 
 }
 
@@ -209,7 +225,8 @@ void DialogRange::ReadCameraMatrix()
 void DialogRange::on_capButton_clicked()
 {
     Mat im;
-    vid>>im;
+    //vid>>im;
+    im=imread("3.jpg");
     Size patternsize(size1,size2); //interior number of corners
     SimpleBlobDetector::Params params;
     params.minArea = 50;
