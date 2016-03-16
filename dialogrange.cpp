@@ -208,6 +208,8 @@ void DialogRange::on_cdButton_clicked()
     cout<<d/(a*ttt2.at<double>(0)+b*ttt2.at<double>(1)+c*ttt2.at<double>(2))*ttt2.at<double>(1)<<endl;
     cout<<d/(a*ttt2.at<double>(0)+b*ttt2.at<double>(1)+c*ttt2.at<double>(2))<<endl;
 
+
+
 }
 
 void DialogRange::ReadCameraMatrix()
@@ -257,13 +259,5 @@ void DialogRange::on_capButton_clicked()
 
 }
 
-double DialogRange::calDisFromPlane(int x,int y){
 
-}
 
-Point3d DialogRange::im2CameraCord(Point2f src,Mat cm){
-
-    return Point3d(src.x-cm.at<double>(0,2),src.y-cm.at<double>(1,2),0);
-
-}
-//2803

@@ -40,8 +40,7 @@ public:
     //plane Equation
     vector<double> temp12,temp23,tempN;
     double a,b,c,d,t;
-    double calDisFromPlane(int x,int y);
-    Point3d im2CameraCord(Point2f src,Mat cm);
+
 
 private slots:
     void on_cdButton_clicked();

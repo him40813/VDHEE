@@ -8,20 +8,32 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 
+using namespace cv;
+using namespace std;
+
 class GroundPlane
 {
 public:
+    Mat cm,dc;
+
     GroundPlane();
     void readCameraMatrix();
 
-    void findCircle();
+    vector<Point2f> findCircle(Mat im);
 
     void calPlaneEquation();
 
-    void imgCord2CameraCord();
+    Point3d imgCord2CameraCord(Point2d imgCord);
 
-    void getPointAtGround();
+    Point3d getPointAtGround(Point2d imgCord);
 
+    double calDis3D(Point3d a,Point3d b);
+
+private:
+    int eachDis,size1,size2;
+    vector<Point2f> corners;
+    double a,b,c,d;
+    Mat rvec,tvec;
 };
 
 #endif // GROUNDPLANE_H
