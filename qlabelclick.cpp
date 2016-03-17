@@ -5,7 +5,7 @@
 void QLabelClick::mousePressEvent( QMouseEvent* ev )
 {
     const QPoint p = ev->pos();
-    d->setHMLPos(p);
+    //d->setHMLPos(p);
 }
 
 QLabelClick::QLabelClick( QWidget * parent, Qt::WindowFlags f )

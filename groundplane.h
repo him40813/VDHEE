@@ -17,7 +17,10 @@ public:
     Mat cm,dc;
 
     GroundPlane();
+
     void readCameraMatrix();
+
+    bool readCameraMatrix(const string filename);
 
     vector<Point2f> findCircle(Mat im);
 
@@ -28,6 +31,10 @@ public:
     Point3d getPointAtGround(Point2d imgCord);
 
     double calDis3D(Point3d a,Point3d b);
+
+    bool saveGroundParam();
+
+    bool readGroundParam();
 
 private:
     int eachDis,size1,size2;

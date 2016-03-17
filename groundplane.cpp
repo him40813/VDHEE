@@ -15,12 +15,29 @@ void GroundPlane::readCameraMatrix()
 
     cout << endl << "Reading: " << endl;
     FileStorage fs;
-    fs.open("out_camera_data.xml", FileStorage::READ);
+    if (fs.open("out_camera_data.xml", FileStorage::READ)){
+        fs["Camera_Matrix"]>>cm;
+        fs["distortion_coefficients"] >> dc;
+        fs.release();
+    }else{
+        cout<<"cannot read file camera matrix"<<endl;
+    }
+}
 
-    fs["Camera_Matrix"]>>cm;
-    fs["distortion_coefficients"] >> dc;
-    fs.release();
+bool GroundPlane::readCameraMatrix(const string filename)
+{
 
+    cout << endl << "Reading: "<<filename << endl;
+    FileStorage fs;
+    if (fs.open(filename, FileStorage::READ)){
+        fs["Camera_Matrix"]>>cm;
+        fs["distortion_coefficients"] >> dc;
+        fs.release();
+        return true;
+    }else{
+        cout<<"cannot read file camera matrix"<<endl;
+        return false;
+    }
 }
 
 
@@ -129,6 +146,34 @@ double GroundPlane::calDis3D(Point3d a,Point3d b)
 
     return norm(a-b);
 
+}
+
+bool GroundPlane::saveGroundParam()
+{
+    FileStorage fs("ground.xml", FileStorage::WRITE );
+    fs<<"a"<<a;
+    fs<<"b"<<b;
+    fs<<"c"<<c;
+    fs<<"d"<<d;
+    fs.release();
+}
+
+bool GroundPlane::readGroundParam()
+{
+    FileStorage fs;
+    if (fs.open("ground.xml", FileStorage::READ)){
+        fs["a"]>>a;
+        fs["b"]>>b;
+        fs["c"]>>c;
+        fs["d"]>>d;
+        cout<<a<<endl;
+        cout<<b<<endl;
+        cout<<c<<endl;
+        cout<<d<<endl;
+        fs.release();
+    }else{
+        cout<<"cannot read ground plane"<<endl;
+    }
 }
 
 

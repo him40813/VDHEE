@@ -14,6 +14,7 @@
 #include <display.h>
 #include "ffm.h"
 #include "dialogrange.h"
+#include "groundplane.h"
 
 
 class videoProcess
@@ -48,6 +49,7 @@ private:
     Ui::MainWindow *m;
     cv::Ptr<BFM> b;
     cv::Ptr<FFM> ffm;
+    cv::Ptr<GroundPlane> gp;
     cv::Ptr<display> d;
     int h;
     int w;
