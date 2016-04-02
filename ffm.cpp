@@ -34,7 +34,8 @@ void FFM::process(cv::Mat ff,cv::Mat frame){
                 ffUsed.push_back(nea);
                 if (calDis(curr.at(i).pt,start.at(i).pt)>D || start.at(i).size>0){
                     start.at(i).size=mResist;
-                    mf.push_back(i);
+                    mf.at(i)=1;
+
                 }
             }else{
                 curr.at(i).size-=1;
@@ -42,6 +43,9 @@ void FFM::process(cv::Mat ff,cv::Mat frame){
                 if (curr.at(i).size<0 && start.at(i).size<0){
                     del.push_back(i);
                 }
+//                if (start.at(i).size>=0){
+//                    mf.at(i)=1;
+//                }
 
             }
 
@@ -59,11 +63,11 @@ void FFM::process(cv::Mat ff,cv::Mat frame){
 }
 
 int FFM::getMFCount(){
-    return mf.size();
+    return sum(mf)[0];
 }
 
 int FFM::getSFCount(){
-    return curr.size()-mf.size();
+    return curr.size()-sum(mf)[0];
 }
 
 void FFM::addNewSFF(cv::Mat nz){
@@ -72,8 +76,7 @@ void FFM::addNewSFF(cv::Mat nz){
             cv::Point ffPos=nz.at<cv::Point>(ffi);
             start.push_back(cv::KeyPoint(ffPos,0));
             curr.push_back(cv::KeyPoint(ffPos,cResist));
-
-
+            mf.push_back(0);
         }
     }
 
@@ -85,11 +88,20 @@ void FFM::addNewSFF(cv::Mat nz){
 }
 
 void FFM::deleteFF(){
-    for (int i=0;i<del.size();i++){
-        curr.erase(curr.begin()+del.at(i));
-        start.erase(start.begin()+del.at(i));
-
+    std::vector<cv::KeyPoint> start2;
+    std::vector<cv::KeyPoint> curr2;
+    std::vector<int> mf2;
+    for (int i=0;i<start.size();i++){
+        if (std::find(del.begin(),del.end(),i)==del.end()){
+            start2.push_back(start.at(i));
+            curr2.push_back(curr.at(i));
+            mf2.push_back(mf.at(i));
+        }
     }
+    cout<<start.size()<<","<<start2.size()<<endl;
+    start=start2;
+    curr=curr2;
+    mf=mf2;
 
 }
 
@@ -143,7 +155,7 @@ int FFM::findNearestMatch(int rowNum,const Mat nz){
 
 //    }
 
-    nzUsed.push_back(matches[0].trainIdx);
+    nzUsed.push_back(index);
     cout<<"in"<<matches[0].trainIdx<<endl;
     return index;
 
@@ -221,14 +233,16 @@ void FFM::calculateMatch(Mat nz){
 
 
 void FFM::clearNSort(){
+    int si=0;
     for (int i=0;i<mf.size();i++){
-
-
-        std::swap(curr.at(i),curr.at(mf.at(i)));
-        std::swap(start.at(i),start.at(mf.at(i)));
+        if (mf.at(i)==1){
+            std::swap(curr.at(si),curr.at(i));
+            std::swap(start.at(si),start.at(i));
+            si++;
+        }
     }
 
-    mf.clear();
+    std::fill(mf.begin(),mf.end(),0);
     ffUsed.clear();
     nzUsed.clear();
     del.clear();
