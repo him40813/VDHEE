@@ -16,6 +16,8 @@ class GroundPlane
 public:
     Mat cm,dc;
 
+    double a,b,c,d;
+
     GroundPlane();
 
     void readCameraMatrix();
@@ -32,14 +34,24 @@ public:
 
     double calDis3D(Point3d a,Point3d b);
 
+    double calDis3DFrom2D(Point2d a,Point2d b);
+
     bool saveGroundParam();
+
+    bool saveGroundParam(const string x);
 
     bool readGroundParam();
 
+    bool readGroundParam(const string x);
+
+    bool writeSetting(const string x);
+
+    vector<Point2f> corners;
+
 private:
     int eachDis,size1,size2;
-    vector<Point2f> corners;
-    double a,b,c,d;
+
+
     Mat rvec,tvec;
 };
 

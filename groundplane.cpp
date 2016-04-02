@@ -17,7 +17,7 @@ void GroundPlane::readCameraMatrix()
     FileStorage fs;
     if (fs.open("out_camera_data.xml", FileStorage::READ)){
         fs["Camera_Matrix"]>>cm;
-        fs["distortion_coefficients"] >> dc;
+        fs["Distortion_Coefficients"] >> dc;
         fs.release();
     }else{
         cout<<"cannot read file camera matrix"<<endl;
@@ -31,7 +31,7 @@ bool GroundPlane::readCameraMatrix(const string filename)
     FileStorage fs;
     if (fs.open(filename, FileStorage::READ)){
         fs["Camera_Matrix"]>>cm;
-        fs["distortion_coefficients"] >> dc;
+        fs["Distortion_Coefficients"] >> dc;
         fs.release();
         return true;
     }else{
@@ -148,6 +148,11 @@ double GroundPlane::calDis3D(Point3d a,Point3d b)
 
 }
 
+double GroundPlane::calDis3DFrom2D(Point2d a,Point2d b)
+{
+    return norm(getPointAtGround(a)-getPointAtGround(b));
+}
+
 bool GroundPlane::saveGroundParam()
 {
     FileStorage fs("ground.xml", FileStorage::WRITE );
@@ -156,6 +161,18 @@ bool GroundPlane::saveGroundParam()
     fs<<"c"<<c;
     fs<<"d"<<d;
     fs.release();
+    return true;
+}
+
+bool GroundPlane::saveGroundParam(const string x)
+{
+    FileStorage fs(x, FileStorage::WRITE );
+    fs<<"a"<<a;
+    fs<<"b"<<b;
+    fs<<"c"<<c;
+    fs<<"d"<<d;
+    fs.release();
+    return true;
 }
 
 bool GroundPlane::readGroundParam()
@@ -171,9 +188,42 @@ bool GroundPlane::readGroundParam()
         cout<<c<<endl;
         cout<<d<<endl;
         fs.release();
+        return true;
     }else{
         cout<<"cannot read ground plane"<<endl;
+        return false;
     }
 }
 
+bool GroundPlane::readGroundParam(const string x)
+{
+    FileStorage fs;
+    if (fs.open(x, FileStorage::READ)){
+        fs["a"]>>a;
+        fs["b"]>>b;
+        fs["c"]>>c;
+        fs["d"]>>d;
+        cout<<a<<endl;
+        cout<<b<<endl;
+        cout<<c<<endl;
+        cout<<d<<endl;
+        fs.release();
+        return true;
+    }else{
+        cout<<"cannot read ground plane"<<endl;
+        return false;
+    }
+}
 
+bool GroundPlane::writeSetting(const string x)
+{
+    FileStorage fs(x, FileStorage::WRITE );
+    fs<<"Camera_Matrix"<<cm;
+    fs<<"distortion_coefficients"<<dc;
+    fs<<"a"<<a;
+    fs<<"b"<<b;
+    fs<<"c"<<c;
+    fs<<"d"<<d;
+    fs.release();
+
+}

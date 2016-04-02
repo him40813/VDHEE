@@ -15,6 +15,7 @@ void display::setImage(cv::Mat im)
 {
     this->im=im;
     circleSize=std::ceil(0.0025*im.size().width);
+
 }
 
 void display::drawMask(cv::Mat mask,cv::Scalar color,bool check)

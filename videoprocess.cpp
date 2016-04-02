@@ -33,7 +33,7 @@ void videoProcess::base(){
     //http://stackoverflow.com/questions/11543298/qt-opencv-displaying-images-on-qlabel
 
         dr.show();
-        dr.setImageMat(realFrame,vid,gp);
+        dr.setImageMat(realFrame,vid,gp,&p);
 
         p=true;
     }
@@ -43,7 +43,7 @@ void videoProcess::base(){
     FF=tools::key2Mat(curr,h,w);
     FF=b->getForeground(FF);
     ffm->clearNSort();
-    ffm->process(FF);
+    ffm->process(FF,frame);
     int test=ffm->getMFCount();
     if (test>0){
         cIn++;
@@ -107,9 +107,11 @@ void videoProcess::process()
     countIn=0;
     //Create Object
     d=new display(m,"main");
-    b=new BFM(h,w,m->bgf->text().toInt(),m->bff->text().toInt(),d);
-    ffm=new FFM(d,m->r->text().toInt(),m->d->text().toInt(),cout);
     gp=new GroundPlane();
+    b=new BFM(h,w,m->bgf->text().toInt(),m->bff->text().toInt(),d);
+    //ffm=new FFM(d,m->r->text().toInt(),m->d->text().toInt(),cout,gp);
+    ffm=new FFM(d,38,76,cout,gp);
+
     //loop
     for(;;)
     {

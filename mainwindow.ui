@@ -214,6 +214,19 @@
       <string>5</string>
      </property>
     </widget>
+    <widget class="QCheckBox" name="tdRBut">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>250</y>
+       <width>201</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>3D Distance Calculate</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">

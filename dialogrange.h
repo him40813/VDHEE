@@ -14,6 +14,7 @@
 #include <opencv2/features2d.hpp>
 #include "groundplane.h"
 
+
 namespace Ui {
 class DialogRange;
 }
@@ -23,7 +24,7 @@ class DialogRange : public QDialog
     Q_OBJECT
 
 public:
-    void setImageMat(cv::Mat im,VideoCapture vid,Ptr<GroundPlane> gp);
+    void setImageMat(cv::Mat im,VideoCapture vid,Ptr<GroundPlane> gp,bool *p);
 
 
 
@@ -38,7 +39,7 @@ public:
     void ReadCameraMatrix();
     //plane Equation
 
-    GroundPlane gp;
+    Ptr<GroundPlane> gp;
 
 
 private slots:
@@ -64,10 +65,14 @@ private slots:
 
     void on_sspBut_clicked();
 
+    void on_buttonBox_accepted();
+
 private:
     Ui::DialogRange *ui;
 
     void setStatusLb(const string x,bool success);
+
+    bool *p;
 
 };
 

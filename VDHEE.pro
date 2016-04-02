@@ -25,8 +25,8 @@ SOURCES += main.cpp\
     settings.cpp \
     calibrater.cpp \
     groundplane.cpp
-INCLUDEPATH += C:/opencv/build2/install/include
-LIBS += "C:/opencv/build2/bin/*.dll"
+INCLUDEPATH += C:/opencv/build3conrib/install/include
+LIBS += "C:/opencv/build3conrib/bin/*.dll"
 
 
 HEADERS  += mainwindow.h \
