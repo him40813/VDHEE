@@ -24,24 +24,25 @@ public:
     int getSFCount();
     int findNearest(cv::Point x,cv::Mat nz);
     int findNearestMatch(int rowNum,Mat nz);
-    int findNearestMatch2(int index,const Mat nz);
+    bool updateForeground(int i,int nea);
     double calDis(cv::Point xx1,cv::Point xx2);
     void addNewSFF(cv::Mat nz);
     Mat extractKeyPoint(std::vector<cv::KeyPoint> kp);
     Mat extractMatKeyPoint(Mat kp);
+    Mat extractCurrentKeyPointDynamic(std::vector<cv::KeyPoint> kp);
     void calculateMatch(Mat nz);
     void deleteFF();
     void clearNSort();
     std::vector<int> ffUsed,mf,del,nzUsed;
     std::vector<cv::KeyPoint> start,curr;
-
+    vector<int> dynamicMatch();
     cv::Mat frame,currDes,nzDes;
     std::vector< DMatch > matches;
     std::vector<std::vector< DMatch > > mmm;
     int cResist,mResist;
     double R,D;
     cv::Ptr<display> d;
-
+    Mat nz;
     cv::Ptr<GroundPlane> gp;
 
     Ptr<xfeatures2d::SURF> surf;
