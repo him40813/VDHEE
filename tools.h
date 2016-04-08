@@ -5,6 +5,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include "ui_mainwindow.h"
+#include <QString>
 
 class tools
 {
@@ -25,6 +26,9 @@ public:
     static QImage Mat2QImage(const cv::Mat frame);
     static QPixmap Mat2QPixmap(const cv::Mat frame);
     static double Determinant3D(int a,int b,int c,int d,int e,int f,int g,int h,int i);
+    static QString getPath();
+
+
 
     Ui::MainWindow *m;
 };

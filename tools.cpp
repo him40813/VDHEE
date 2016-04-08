@@ -76,3 +76,7 @@ double tools::Determinant3D(int a,int b,int c,int d,int e,int f,int g,int h,int 
     return a*(e*i-f*h)-b*(d*i-f*g)+c*(d*h-e*g);
 }
 
+QString tools::getPath(){
+    QString path="C:\\Users\\HHM-MSI\\Videos\\TC3+FW";
+    return path;
+}

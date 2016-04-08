@@ -17,9 +17,9 @@
 class FFM
 {
 public:
+    int matchType,calDisType,maxMovingDistance;
     FFM(cv::Ptr<display> d,int r,int dis,int coutz,cv::Ptr<GroundPlane> gp);
-    void process(cv::
-                 Mat ff,cv::Mat frame);
+    void process(cv::Mat ff,cv::Mat frame);
     int getMFCount();
     int getSFCount();
     int findNearest(cv::Point x,cv::Mat nz);
@@ -30,23 +30,26 @@ public:
     Mat extractKeyPoint(std::vector<cv::KeyPoint> kp);
     Mat extractMatKeyPoint(Mat kp);
     Mat extractCurrentKeyPointDynamic(std::vector<cv::KeyPoint> kp);
-    void calculateMatch(Mat nz);
+    double calculateMatchDis(Mat pointDes1,Mat pointDes2);
     void deleteFF();
     void clearNSort();
     std::vector<int> ffUsed,mf,del,nzUsed;
     std::vector<cv::KeyPoint> start,curr;
     vector<int> dynamicMatch();
+    vector<int> dynamicMatchV2();
     cv::Mat frame,currDes,nzDes;
     std::vector< DMatch > matches;
     std::vector<std::vector< DMatch > > mmm;
-    int cResist,mResist;
+    int cResist,mResist,numMF=0;
     double R,D;
     cv::Ptr<display> d;
     Mat nz;
     cv::Ptr<GroundPlane> gp;
+    double calDis3D(cv::Point xx1,cv::Point xx2);
+
 
     Ptr<xfeatures2d::SURF> surf;
-    int matchType;
+
 };
 
 #endif // FFM_H

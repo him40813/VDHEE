@@ -8,9 +8,11 @@ FFM::FFM(cv::Ptr<display> d,int r,int dis,int coutz,cv::Ptr<GroundPlane> gp)
     cResist=2;
     R=r;
     D=dis;
-    matchType=1;
-    surf = xfeatures2d::SURF::create(500); // note extra namespace
 
+    calDisType=0;
+    matchType=0;
+    surf = xfeatures2d::SURF::create(500); // note extra namespace
+    maxMovingDistance=-1;
 
 }
 
@@ -21,13 +23,14 @@ void FFM::process(cv::Mat ff,cv::Mat frame){
     if (curr.size()==0 && !nz.empty()){
         addNewSFF(nz);
     }else {
-//        nzDes=extractMatKeyPoint(nz);
+        nzDes=extractMatKeyPoint(nz);
+
 //        for (int i=0;i<curr.size();i++){
 //            //int nea=findNearest(curr.at(i).pt,nz);
 //            int nea=findNearestMatch(i,nz);
 //            updateForeground(i,nea);
-//        }
-        dynamicMatch();
+//        }00
+        dynamicMatchV2();
 
         addNewSFF(nz);
         deleteFF();
@@ -43,10 +46,13 @@ bool FFM::updateForeground(int i,int nea){
         curr.at(i).pt=nz.at<cv::Point>(nea);
         curr.at(i).size=cResist;
         ffUsed.push_back(nea);
-        if (calDis(curr.at(i).pt,start.at(i).pt)>D || start.at(i).size>0){
-            start.at(i).size=mResist;
+        int tempDistance=calDis(curr.at(i).pt,start.at(i).pt);
+        if (tempDistance>D || start.at(i).size>0){
+            start.at(i).size=6;
             mf.at(i)=1;
-
+            if (tempDistance>maxMovingDistance){
+                maxMovingDistance=tempDistance;
+            }
         }
     }else{
         curr.at(i).size-=1;
@@ -54,9 +60,9 @@ bool FFM::updateForeground(int i,int nea){
         if (curr.at(i).size<0 && start.at(i).size<0){
             del.push_back(i);
         }
-//                if (start.at(i).size>=0){
-//                    mf.at(i)=1;
-//                }
+        if (start.at(i).size>=0){
+            mf.at(i)=1;
+        }
 
     }
 }
@@ -100,7 +106,7 @@ void FFM::deleteFF(){
             currDesTemp.push_back(currDes.row(i));
         }
     }
-    cout<<start.size()<<","<<currDes.rows<<endl;
+
     currDes=currDesTemp;
     start=start2;
     curr=curr2;
@@ -175,19 +181,27 @@ vector<int> FFM::dynamicMatch(){
         for (int j=0;j<nz.total();j++){
             Point p1=curr.at(i).pt;
             Point p2=nz.at<cv::Point>(j);
-            int distance=calDis(p1,p2);
+            double distance;
+            if (matchType){
+                distance=calculateMatchDis(currDes.row(i),nzDes.row(j));
+            }
+            else{
+                distance=calDis(p1,p2);
+            }
             tempValue.push_back(distance);
             tempIndex.push_back(j);
-            for (int k=0;k<tempValue.size();k++){
-                if (tempValue.at(k)<=distance){
-                    std::swap(tempValue.at(k),tempValue.at(j));
-                    std::swap(tempIndex.at(k),tempIndex.at(j));
-                }
-            }
+//            for (int k=0;k<tempValue.size();k++){
+//                if (distance<=tempValue.at(k)){
+//                    std::swap(tempValue.at(k),tempValue.at(j));
+//                    std::swap(tempIndex.at(k),tempIndex.at(j));
+//                    break;
+//                }
+//            }
 
         }
         indexs.push_back(tempIndex);
         values.push_back(tempValue);
+
     }
 
     vector<int> alreadyUse;
@@ -196,7 +210,11 @@ vector<int> FFM::dynamicMatch(){
         int tempRealIndex=-1;
         for (int j=0;j<indexs.at(i).size();j++){
             double val=values.at(i).at(j);
-            if (val<=min && val<R && std::find(alreadyUse.begin(),alreadyUse.end(),indexs.at(i).at(j))==alreadyUse.end()){
+            double far=val;
+            if (matchType){
+                far=calDis(curr.at(i).pt,nz.at<Point>(indexs.at(i).at(j)));
+            }
+            if (val<=min && far<R && std::find(alreadyUse.begin(),alreadyUse.end(),indexs.at(i).at(j))==alreadyUse.end()){
                 min=val;
                 tempRealIndex=indexs.at(i).at(j);
             }
@@ -212,16 +230,24 @@ vector<int> FFM::dynamicMatch(){
 
 double FFM::calDis(cv::Point xx1,cv::Point xx2)
 {
+    R=23.7;
+    D=47.4;
+    if (calDisType){
+        return calDis3D(xx1,xx2);
+    }
+    //return gp->calDis3DFrom2D(xx1,xx2);
+    double x = xx1.x - xx2.x;
+    double y = xx1.y - xx2.y;
+    double dist;
 
+    dist = pow(x,2)+pow(y,2);           //calculating distance by euclidean formula
+    dist = sqrt(dist);                  //sqrt is function in math.h
+
+    return dist;
+}
+
+double FFM::calDis3D(cv::Point xx1,cv::Point xx2){
     return gp->calDis3DFrom2D(xx1,xx2);
-//    double x = xx1.x - xx2.x;
-//    double y = xx1.y - xx2.y;
-//    double dist;
-
-//    dist = pow(x,2)+pow(y,2);           //calculating distance by euclidean formula
-//    dist = sqrt(dist);                  //sqrt is function in math.h
-
-//    return dist;
 }
 
 Mat FFM::extractKeyPoint(std::vector<cv::KeyPoint> kp){
@@ -244,10 +270,13 @@ Mat FFM::extractMatKeyPoint(Mat kp){
     std::vector<KeyPoint> keypoints_object;
     std::vector<Point2f> tttemp;
     for (int i=0;i<kp.rows;i++){
-        cv::Point2f ffPos=kp.at<cv::Point2f>(i);
+        cv::Point ffPos=kp.at<cv::Point>(i);
         tttemp.push_back(ffPos);
+
     }
     KeyPoint::convert(tttemp,keypoints_object);
+
+
     surf->compute( frame, keypoints_object, result );
     return result;
 }
@@ -273,13 +302,14 @@ Mat FFM::extractCurrentKeyPointDynamic(std::vector<cv::KeyPoint> kp){
 
 }
 
-void FFM::calculateMatch(Mat nz){
+double FFM::calculateMatchDis(Mat pointDes1,Mat pointDes2){
     FlannBasedMatcher matcher;
-
-    if (!nz.empty()){
-        matcher.match(currDes,extractMatKeyPoint(nz),matches);
-
+    std::vector<DMatch> tempMatch;
+    if (!pointDes1.empty()){
+        matcher.match(pointDes1,pointDes2,tempMatch);
+        return tempMatch[0].distance;
     }
+    return -1;
 }
 
 
@@ -298,6 +328,21 @@ void FFM::clearNSort(){
             si++;
         }
     }
+    for (int j=si;j<curr.size();j++){
+       if (curr.at(j).size==cResist-1){
+                    std::swap(curr.at(si),curr.at(j));
+                    std::swap(start.at(si),start.at(j));
+                    if (matchType){
+                        Mat temp=currDes.row(si);
+                        currDes.row(si)=currDes.row(j);
+                        currDes.row(j)=temp;
+                    }
+                    si++;
+       }
+
+    }
+
+    numMF=si-1;
 
     std::fill(mf.begin(),mf.end(),0);
     ffUsed.clear();
@@ -307,4 +352,99 @@ void FFM::clearNSort(){
 
 bool response_comparator(const cv::KeyPoint& p1, const cv::KeyPoint& p2) {
     return p1.size > p2.size;
+}
+
+
+vector<int> FFM::dynamicMatchV2(){
+    vector<int> result;
+    vector<vector<int> > indexs;
+    vector<vector<double> > values;
+    for (int i=0;i<curr.size();i++){
+        vector<int> tempIndex;
+        vector<double> tempValue;
+        for (int j=0;j<nz.total();j++){
+            Point p1=curr.at(i).pt;
+            Point p2=nz.at<cv::Point>(j);
+            double distance;
+            if (matchType){
+                distance=calculateMatchDis(currDes.row(i),nzDes.row(j));
+            }
+            else{
+                distance=calDis(p1,p2);
+            }
+            tempValue.push_back(distance);
+            tempIndex.push_back(j);
+//            for (int k=0;k<tempValue.size();k++){
+//                if (distance<=tempValue.at(k)){
+//                    std::swap(tempValue.at(k),tempValue.at(j));
+//                    std::swap(tempIndex.at(k),tempIndex.at(j));
+//                    break;
+//                }
+//            }
+
+        }
+        indexs.push_back(tempIndex);
+        values.push_back(tempValue);
+        result.push_back(-1);
+    }
+
+    vector<int> alreadyUseCurr,alreadyUse,notFound;
+
+    for (int i=0;i<numMF;i++){
+        double min=10000;
+        int tempRealIndex=-1;
+        for (int j=0;j<nz.total();j++){
+            double val=values.at(i).at(j);
+            double far=val;
+            if (matchType){
+                far=calDis(curr.at(i).pt,nz.at<Point>(j));
+            }
+            if (val<=min && far<R && std::find(alreadyUse.begin(),alreadyUse.end(),j)==alreadyUse.end()){
+                min=val;
+                tempRealIndex=j;
+            }
+        }
+        if (tempRealIndex>=0){
+            //updateForeground(i,tempRealIndex);
+            alreadyUse.push_back(tempRealIndex);
+            result.at(i)=tempRealIndex;
+            alreadyUseCurr.push_back(i);
+        }
+
+    }
+
+
+    for (int i=0;i<nz.total();i++){
+        double min=10000;
+        int tempRealIndex=-1;
+        if (std::find(alreadyUse.begin(),alreadyUse.end(),i)!=alreadyUse.end()){
+            continue;
+        }
+        for (int j=0;j<curr.size();j++){
+            double val=values.at(j).at(i);
+            double far=val;
+            if (matchType){
+                far=calDis(curr.at(j).pt,nz.at<Point>(i));
+            }
+
+            if (val<=min && far<R && std::find(alreadyUseCurr.begin(),alreadyUseCurr.end(),j)==alreadyUseCurr.end()){
+
+                min=val;
+                tempRealIndex=j;
+            }
+        }
+        if (tempRealIndex>=0){
+
+            alreadyUseCurr.push_back(tempRealIndex);
+            result.at(tempRealIndex)=i;
+        }
+    }
+
+    for (int i=0;i<curr.size();i++){
+        updateForeground(i,result.at(i));
+    }
+
+
+    return result;
+
 }

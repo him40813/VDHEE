@@ -83,7 +83,7 @@ void DialogRange::on_ccBut_clicked()
 //Load Camera Parameter
 void DialogRange::on_lcpBut_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "C:\\Users\\HHM-MSI\\Videos\\TC3+FW", tr("xml Files (*.xml)"));
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), tools::getPath(), tr("xml Files (*.xml)"));
     std::string fileNameStr = fileName.toUtf8().constData();//cast to string
     gp->readCameraMatrix(fileNameStr);
     setStatusLb(gp->readCameraMatrix(fileNameStr)?"Load C Done":"Load C Fail",1);
@@ -103,7 +103,7 @@ void DialogRange::on_scpBut_clicked()
         }
     }
     //write
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Open Image"), "C:\\Users\\HHM-MSI\\Videos\\TC3+FW", tr("xml Files (*.xml)"));
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Open Image"), tools::getPath(), tr("xml Files (*.xml)"));
     std::string fileNameStr = fileName.toUtf8().constData();//cast to string
     FileStorage fs(fileNameStr, FileStorage::WRITE );
     fs<<"Camera_Matrix"<<cm;
@@ -115,7 +115,7 @@ void DialogRange::on_scpBut_clicked()
 //From Image (GroundPlane)
 void DialogRange::on_fmBut_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "C:\\Users\\HHM-MSI\\Videos\\TC3+FW", tr("xml Files (*.xml)"));
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), tools::getPath(), tr("xml Files (*.xml)"));
     std::string fileNameStr = fileName.toUtf8().constData();//cast to string
 
     Mat im;
@@ -142,7 +142,7 @@ void DialogRange::on_fcBut_clicked()
 //Load Ground Parameter
 void DialogRange::on_lgpBut_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "C:\\Users\\HHM-MSI\\Videos\\TC3+FW", tr("xml Files (*.xml)"));
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), tools::getPath(), tr("xml Files (*.xml)"));
     std::string fileNameStr = fileName.toUtf8().constData();//cast to string
     gp->readGroundParam(fileNameStr);
 }
@@ -151,7 +151,7 @@ void DialogRange::on_lgpBut_clicked()
 void DialogRange::on_sgpBut_clicked()
 {
     gp->readGroundParam();
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Open Image"), "C:\\Users\\HHM-MSI\\Videos\\TC3+FW", tr("xml Files (*.xml)"));
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Open Image"), tools::getPath(), tr("xml Files (*.xml)"));
     std::string fileNameStr = fileName.toUtf8().constData();//cast to string
     gp->saveGroundParam(fileNameStr);
 }
@@ -159,7 +159,7 @@ void DialogRange::on_sgpBut_clicked()
 //Load Setting Parameter
 void DialogRange::on_lspBut_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "C:\\Users\\HHM-MSI\\Videos\\TC3+FW", tr("xml Files (*.xml)"));
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), tools::getPath(), tr("xml Files (*.xml)"));
     std::string fileNameStr = fileName.toUtf8().constData();//cast to string
     gp->readCameraMatrix(fileNameStr);
     gp->readGroundParam(fileNameStr);
@@ -169,7 +169,7 @@ void DialogRange::on_lspBut_clicked()
 //Save Setting Parameter
 void DialogRange::on_sspBut_clicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Open Image"), "C:\\Users\\HHM-MSI\\Videos\\TC3+FW", tr("xml Files (*.xml)"));
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Open Image"), tools::getPath(), tr("xml Files (*.xml)"));
     std::string fileNameStr = fileName.toUtf8().constData();//cast to string
     gp->writeSetting(fileNameStr);
 }

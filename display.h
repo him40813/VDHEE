@@ -36,6 +36,8 @@ public:
 
     void setMfm(int value);
 
+    bool nonShow;
+
 private:
     Ui::MainWindow *m;
 

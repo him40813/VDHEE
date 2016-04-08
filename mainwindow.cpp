@@ -23,9 +23,8 @@ MainWindow::~MainWindow()
 void MainWindow::on_choose_clicked()
 {
 
-
     //File Chooser
-    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "C:\\Users\\HHM-MSI\\Videos\\TC3+FW", tr("Image Files (*.mp4 *.avi *.wmv)"));
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"),tools::getPath() , tr("Image Files (*.mp4 *.avi *.wmv)"));
     std::string fileNameStr = fileName.toUtf8().constData();//cast to string
 
     if (fileNameStr.compare("")){

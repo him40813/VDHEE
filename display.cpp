@@ -6,7 +6,7 @@ display::display(Ui::MainWindow *m,std::string axisName)
     this->axisName=axisName;
     cv::namedWindow(axisName,CV_WINDOW_NORMAL);
     cv::resizeWindow(axisName, 960, 720);
-
+    nonShow=false;
 }
 
 
@@ -50,7 +50,7 @@ void display::drawLine(std::vector<cv::KeyPoint> start,std::vector<cv::KeyPoint>
 
 void display::showIm()
 {
-    if (!im.empty())
+    if (!im.empty() && nonShow)
     {
         imshow(axisName,im);
         m->frameNum->setText(frameN);

@@ -7,6 +7,7 @@ videoProcess::videoProcess(Ui::MainWindow *m,cv::VideoCapture v)
     this->m=m;
     cin=m->cin->text().toInt();
     cout=m->cout->text().toInt();
+
 }
 
 void videoProcess::setVid(cv::VideoCapture v)
@@ -16,13 +17,16 @@ void videoProcess::setVid(cv::VideoCapture v)
 }
 
 //Main Function Each Lopp--------------------------------------------------------------------------------------------------------------
-void videoProcess::base(){
+int videoProcess::base(){
 
 
 
 //Init------------------------------------------------------------------------------------
     //readframe
-    vid.read(realFrame);
+    if (!vid.read(realFrame)){
+        endOfVid=true;
+        return 0;
+    }
     //rgb2gray
     cv::cvtColor(realFrame,frame, CV_BGR2GRAY);
     d->setImage(realFrame);//set Original  Image
@@ -48,17 +52,28 @@ void videoProcess::base(){
     if (test>0){
         cIn++;
     }
-    else{
-        cIn=0;
+    else if (human){
+        cOut++;
     }
-    if (cIn==cin ){
+    if (cIn==cin && !human){
         human=true;
         countIn++;
         m->StatLabel->setText(QString::fromStdString("Entry: "+tools::int2str(countIn)));
+        exel1.push_back(n);
+        exel2.push_back(test);
     }else if(cIn>cin){
          human=true;
-    }else{
+         exel1.push_back(n);
+         exel2.push_back(test);
+
+    }
+
+    if (cOut==1 && human){
         human=false;
+        cIn=0;
+        cOut=0;
+        exel3.push_back(ffm->maxMovingDistance);
+        ffm->maxMovingDistance=-1;
     }
     d->setMfm(ffm->getSFCount());
     d->setMfm(ffm->getMFCount());
@@ -73,7 +88,7 @@ void videoProcess::base(){
     d->setBg(b->BG.size());
     d->setBf(b->BF.size());
     d->setCff(b->cff);
-    d->setFf(b->fff);
+    d->setFf(test);
     d->setMfm(ffm->getSFCount());
     d->setMfm(ffm->getMFCount());
     d->setFrameN(n);
@@ -103,8 +118,10 @@ void videoProcess::process()
     s=false;
     p=false;
     setupRange=false;
+    endOfVid=false;
     cIn=0;
     countIn=0;
+    cOut=0;
     //Create Object
     d=new display(m,"main");
     gp=new GroundPlane();
@@ -112,9 +129,13 @@ void videoProcess::process()
     //ffm=new FFM(d,m->r->text().toInt(),m->d->text().toInt(),cout,gp);
     ffm=new FFM(d,38,76,cout,gp);
 
+    //Init Checker
+    readCheckingFile("Vid37.xml");
+
     //loop
     for(;;)
     {
+
 
 
 //        start=cv::getTickCount();
@@ -130,6 +151,7 @@ void videoProcess::process()
             continue;
         }else if (p){//check if press pause
             cv::waitKey(1);
+            //readCheckingFile("testCheckFile.xml");
             continue;
         }else{//Normal loop
             start=cv::getTickCount();
@@ -144,12 +166,19 @@ void videoProcess::process()
             break;
         }
 
-        if (d->im.empty())
+        if (endOfVid)
         {
+            readCheckingFile("testCheckFile.xml");
+            saveMatToCsvDouble(exelStat,"exelStat-case"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+            saveMatToCsv(exel1,"exel1-case"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+            saveMatToCsv(exel2,"exel2-case"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+            saveMatToCsv(exel3,"exel3-case"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
             break;
         }
 
+
     }
+
 }
 
 void videoProcess::stopProcess(){
@@ -164,4 +193,90 @@ void videoProcess::step(){
     s=true;
 }
 
+void videoProcess::saveMatToCsv(const Mat &matrix, const string filename){
+     ofstream myfile;
+     myfile.open(filename.c_str());
 
+     for (int i=0;i<matrix.rows;i++){
+         for (int j=0;j<matrix.cols;j++){
+             myfile <<matrix.row(i).at<int>(j);
+             if (j!=matrix.cols-1)
+                myfile<<",";
+         }
+         myfile<<endl;
+     }
+    std::cout<<filename<<":writeFile Complete"<<endl;
+     myfile.close();
+
+}
+
+void videoProcess::saveMatToCsvDouble(const Mat &matrix, const string filename){
+     ofstream myfile;
+     myfile.open(filename.c_str());
+
+     for (int i=0;i<matrix.rows;i++){
+         for (int j=0;j<matrix.cols;j++){
+             myfile <<matrix.row(i).at<double>(j);
+             if (j!=matrix.cols-1)
+                myfile<<",";
+         }
+         myfile<<endl;
+     }
+    std::cout<<filename<<":writeFile Complete"<<endl;
+     myfile.close();
+
+}
+
+bool videoProcess::readCheckingFile(const string x){
+    //0.966416
+    //0.972932
+    //0.974185
+    FileStorage fs;
+    if (fs.open(x, FileStorage::READ)){
+        fs["checkFile"]>>checkFile;
+        std::cout<<checkFile<<endl;
+
+        if (!checkFile.empty()){
+            for (int i=0;i<checkFile.rows;++i){
+                cv::Point p=checkFile.at<cv::Point>(i);
+
+                for (int nn=p.x;nn<=p.y;++nn){
+                    for (int nnn=0;nnn<30;++nnn){
+                        checkList.push_back(nn*30+nnn);
+
+                    }
+
+                }
+            }
+            double count=0;
+            for (int ii=0;ii<exel1.rows;++ii){
+                unsigned int pos = find(checkList.begin(), checkList.end(), exel1.at<int>(ii)) - checkList.begin();
+                if (pos<checkList.size()){
+                    checkList.at(pos)=-1;
+                    ++count;
+                }
+            }
+            exelStat=cv::Mat( 0, 3, CV_64F);
+            std::cout<<count<<","<<checkList.size()<<",avg: "<<count/checkList.size()<<endl;
+            Mat stat1=(Mat_<double>(1,3) << count,checkList.size(),count/checkList.size());
+            exelStat.push_back(stat1);
+
+            double mfSum=cv::sum(exel2)[0];
+            std::cout<<mfSum<<","<<exel2.rows<<",avg: "<<mfSum/exel2.rows<<endl;
+            Mat stat2= (Mat_<double>(1,3)<<mfSum,exel2.rows, mfSum/exel2.rows);
+            exelStat.push_back(stat2);
+
+            double mfSum3=cv::sum(exel3)[0];
+            std::cout<<mfSum3<<","<<exel3.rows<<",avg: "<<mfSum3/exel3.rows<<endl;
+            Mat stat3=(Mat_<double>(1,3)<<mfSum3,exel3.rows, mfSum3/exel3.rows);
+            exelStat.push_back(stat3);
+
+        }
+        fs.release();
+
+        return true;
+    }else{
+        std::cout<<"cannot read CheckFile:"<<x<<endl;
+        return false;
+    }
+}
