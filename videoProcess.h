@@ -51,9 +51,10 @@ private:
     bool s;
     bool human;
     bool setupRange;
+    bool endOfTest;
 
     cv::Mat frame,realFrame,FF;
-    cv::Mat checkFile,exel1,exel2,exel3,exelStat;
+    cv::Mat checkFile,exel1,exel2,exel3,exelStat,exel4;
     std::vector<cv::KeyPoint> curr;
     Ui::MainWindow *m;
     cv::Ptr<BFM> b;
@@ -65,6 +66,7 @@ private:
     int w;
     int n;//number of frame
     int cin,cout;
+    int testType;
 };
 
 #endif // VIDEOPROCESS_H

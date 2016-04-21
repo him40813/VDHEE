@@ -26,6 +26,7 @@ public:
     int findNearestMatch(int rowNum,Mat nz);
     bool updateForeground(int i,int nea);
     double calDis(cv::Point xx1,cv::Point xx2);
+    double calDis2d(cv::Point xx1,cv::Point xx2);
     void addNewSFF(cv::Mat nz);
     Mat extractKeyPoint(std::vector<cv::KeyPoint> kp);
     Mat extractMatKeyPoint(Mat kp);

@@ -9,8 +9,8 @@ FFM::FFM(cv::Ptr<display> d,int r,int dis,int coutz,cv::Ptr<GroundPlane> gp)
     R=r;
     D=dis;
 
-    calDisType=0;
-    matchType=0;
+    calDisType=1;
+    matchType=1;
     surf = xfeatures2d::SURF::create(500); // note extra namespace
     maxMovingDistance=-1;
 
@@ -47,11 +47,12 @@ bool FFM::updateForeground(int i,int nea){
         curr.at(i).size=cResist;
         ffUsed.push_back(nea);
         int tempDistance=calDis(curr.at(i).pt,start.at(i).pt);
+        int temp4MaxDis=calDis2d(curr.at(i).pt,start.at(i).pt);
         if (tempDistance>D || start.at(i).size>0){
             start.at(i).size=6;
             mf.at(i)=1;
-            if (tempDistance>maxMovingDistance){
-                maxMovingDistance=tempDistance;
+            if (temp4MaxDis>maxMovingDistance){
+                maxMovingDistance=temp4MaxDis;
             }
         }
     }else{
@@ -230,11 +231,35 @@ vector<int> FFM::dynamicMatch(){
 
 double FFM::calDis(cv::Point xx1,cv::Point xx2)
 {
-    R=23.7;
-    D=47.4;
+
     if (calDisType){
         return calDis3D(xx1,xx2);
     }
+    //old type
+//    R=11.8;
+//    D=23.6;
+    //new type(x2)
+//    R=23.6;
+//    D=47.2;
+    //return gp->calDis3DFrom2D(xx1,xx2);
+    double x = xx1.x - xx2.x;
+    double y = xx1.y - xx2.y;
+    double dist;
+
+    dist = pow(x,2)+pow(y,2);           //calculating distance by euclidean formula
+    dist = sqrt(dist);                  //sqrt is function in math.h
+
+    return dist;
+}
+
+double FFM::calDis2d(cv::Point xx1,cv::Point xx2)
+{
+    //old type
+//    R=11.8;
+//    D=23.6;
+    //new type(x2)
+//    R=23.6;
+//    D=47.2;
     //return gp->calDis3DFrom2D(xx1,xx2);
     double x = xx1.x - xx2.x;
     double y = xx1.y - xx2.y;
@@ -247,6 +272,7 @@ double FFM::calDis(cv::Point xx1,cv::Point xx2)
 }
 
 double FFM::calDis3D(cv::Point xx1,cv::Point xx2){
+
     return gp->calDis3DFrom2D(xx1,xx2);
 }
 

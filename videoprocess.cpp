@@ -5,9 +5,12 @@ videoProcess::videoProcess(Ui::MainWindow *m,cv::VideoCapture v)
 {
     setVid(v);
     this->m=m;
-    cin=m->cin->text().toInt();
+    //cin=m->cin->text().toInt();
+    cin=24;
     cout=m->cout->text().toInt();
-
+    testType=0;
+    setupRange=false;
+    endOfTest=false;
 }
 
 void videoProcess::setVid(cv::VideoCapture v)
@@ -33,7 +36,7 @@ int videoProcess::base(){
     //detect FAST
     cv::FAST(frame,curr,51);
 
-    if (n==0 and setupRange==false){
+    if (n==0 && setupRange==false){
     //http://stackoverflow.com/questions/11543298/qt-opencv-displaying-images-on-qlabel
 
         dr.show();
@@ -63,15 +66,22 @@ int videoProcess::base(){
         exel2.push_back(test);
     }else if(cIn>cin){
          human=true;
+         //pos in
          exel1.push_back(n);
+         //average mf
          exel2.push_back(test);
 
     }
-
-    if (cOut==1 && human){
+    //pos out
+    if (!human)
+    {
+        exel4.push_back(n);
+    }
+    if (cOut==3 && human){
         human=false;
         cIn=0;
         cOut=0;
+        //average max moving feature
         exel3.push_back(ffm->maxMovingDistance);
         ffm->maxMovingDistance=-1;
     }
@@ -117,20 +127,64 @@ void videoProcess::process()
     stop=false;
     s=false;
     p=false;
-    setupRange=false;
+
     endOfVid=false;
     cIn=0;
     countIn=0;
     cOut=0;
     //Create Object
     d=new display(m,"main");
-    gp=new GroundPlane();
+
+    if (!testType)
+        gp=new GroundPlane();
+
     b=new BFM(h,w,m->bgf->text().toInt(),m->bff->text().toInt(),d);
     //ffm=new FFM(d,m->r->text().toInt(),m->d->text().toInt(),cout,gp);
-    ffm=new FFM(d,38,76,cout,gp);
 
-    //Init Checker
-    readCheckingFile("Vid37.xml");
+
+//    testType=7;
+    //define test value
+    if (testType==0){
+        ffm=new FFM(d,8,16,cout,gp);
+        ffm->calDisType=0;
+        ffm->matchType=0;
+        endOfTest=true;
+    }else if (testType==1){
+        ffm=new FFM(d,18,36,cout,gp);
+        ffm->calDisType=1;
+        ffm->matchType=0;
+    }else if (testType==2){
+        ffm=new FFM(d,8,16,cout,gp);
+        ffm->calDisType=0;
+        ffm->matchType=1;
+    }else if (testType==3){
+        ffm=new FFM(d,18,36,cout,gp);
+        ffm->calDisType=1;
+        ffm->matchType=1;
+    }else if (testType==4){
+        ffm=new FFM(d,16,16,cout,gp);
+        ffm->calDisType=0;
+        ffm->matchType=0;
+    }else if (testType==5){
+        ffm=new FFM(d,36,36,cout,gp);
+        ffm->calDisType=1;
+        ffm->matchType=0;
+    }else if (testType==6){
+        ffm=new FFM(d,16,16,cout,gp);
+        ffm->calDisType=0;
+        ffm->matchType=1;
+    }else if (testType==7){
+        ffm=new FFM(d,36,37,cout,gp);
+        ffm->calDisType=1;
+        ffm->matchType=1;
+        endOfTest=true;
+    }
+    //old RD
+    //ffm=new FFM(d,36,36,cout,gp);
+    //new RD
+//    ffm=new FFM(d,36,72,cout,gp);
+
+
 
     //loop
     for(;;)
@@ -168,14 +222,29 @@ void videoProcess::process()
 
         if (endOfVid)
         {
-            readCheckingFile("testCheckFile.xml");
-            saveMatToCsvDouble(exelStat,"exelStat-case"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
-            saveMatToCsv(exel1,"exel1-case"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
-            saveMatToCsv(exel2,"exel2-case"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
-            saveMatToCsv(exel3,"exel3-case"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+            readCheckingFile("41.xml");
+            saveMatToCsvDouble(exelStat,"exelStat-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+            saveMatToCsv(exel1,"exel1-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+            saveMatToCsv(exel2,"exel2-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+            saveMatToCsv(exel3,"exel3-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+            saveMatToCsv(exel4,"exel4-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+            exel1.release();
+            exel2.release();
+            exel3.release();
+            exel4.release();
+            exelStat.release();
             break;
         }
 
+
+    }
+
+    if (!endOfTest){
+        ++testType;
+        vid.set(CV_CAP_PROP_POS_MSEC,0);
+        setupRange=true;
+        n=0;
+        process();
 
     }
 
@@ -233,6 +302,7 @@ bool videoProcess::readCheckingFile(const string x){
     //0.974185
     FileStorage fs;
     if (fs.open(x, FileStorage::READ)){
+        checkList.clear();
         fs["checkFile"]>>checkFile;
         std::cout<<checkFile<<endl;
 
@@ -249,14 +319,18 @@ bool videoProcess::readCheckingFile(const string x){
                 }
             }
             double count=0;
+            double count2=0;
             for (int ii=0;ii<exel1.rows;++ii){
                 unsigned int pos = find(checkList.begin(), checkList.end(), exel1.at<int>(ii)) - checkList.begin();
                 if (pos<checkList.size()){
                     checkList.at(pos)=-1;
                     ++count;
+                }else{
+                    ++count2;
                 }
+
             }
-            exelStat=cv::Mat( 0, 3, CV_64F);
+            exelStat=cv::Mat( 0, 5, CV_64F);
             std::cout<<count<<","<<checkList.size()<<",avg: "<<count/checkList.size()<<endl;
             Mat stat1=(Mat_<double>(1,3) << count,checkList.size(),count/checkList.size());
             exelStat.push_back(stat1);
@@ -270,6 +344,14 @@ bool videoProcess::readCheckingFile(const string x){
             std::cout<<mfSum3<<","<<exel3.rows<<",avg: "<<mfSum3/exel3.rows<<endl;
             Mat stat3=(Mat_<double>(1,3)<<mfSum3,exel3.rows, mfSum3/exel3.rows);
             exelStat.push_back(stat3);
+
+            std::cout<<count2<<","<<(n-checkList.size())+1<<",avg: "<<1-count2/(n-checkList.size())+1<<endl;
+            Mat stat4=(Mat_<double>(1,3) << count2,(n-checkList.size())+1,1-count2/(n-checkList.size())+1);
+            exelStat.push_back(stat4);
+
+            std::cout<<count2<<","<<(n-checkList.size())<<",avg: "<<count2/(n-checkList.size())<<endl;
+            Mat stat5=(Mat_<double>(1,3) << (double)countIn,0,0);
+            exelStat.push_back(stat5);
 
         }
         fs.release();
