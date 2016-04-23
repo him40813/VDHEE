@@ -38,6 +38,10 @@ public:
 
     bool nonShow;
 
+
+
+
+
 private:
     Ui::MainWindow *m;
 

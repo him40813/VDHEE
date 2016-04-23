@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Human Entry/Exit</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QGroupBox" name="groupBox">
@@ -20,7 +20,7 @@
       <x>400</x>
       <y>10</y>
       <width>431</width>
-      <height>511</height>
+      <height>251</height>
      </rect>
     </property>
     <property name="title">
@@ -159,7 +159,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>4</string>
+      <string>24</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_6">
@@ -185,7 +185,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>3</string>
+      <string>6</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_7">
@@ -211,20 +211,33 @@
       </rect>
      </property>
      <property name="text">
-      <string>5</string>
+      <string>8</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="tdRBut">
+    <widget class="QLabel" name="label_8">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>250</y>
-       <width>201</width>
-       <height>23</height>
+       <x>240</x>
+       <y>30</y>
+       <width>91</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>3D Distance Calculate</string>
+      <string>Camera ID</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="tCID">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>30</y>
+       <width>35</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0</string>
      </property>
     </widget>
    </widget>
@@ -326,8 +339,8 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>70</y>
-      <width>161</width>
+      <y>80</y>
+      <width>175</width>
       <height>41</height>
      </rect>
     </property>
@@ -344,9 +357,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>70</y>
-      <width>161</width>
+      <x>200</x>
+      <y>80</y>
+      <width>175</width>
       <height>41</height>
      </rect>
     </property>
@@ -364,7 +377,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>130</y>
+      <y>140</y>
       <width>351</width>
       <height>41</height>
      </rect>
@@ -379,9 +392,9 @@
    <widget class="QPushButton" name="choose">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>10</y>
-      <width>351</width>
+      <x>200</x>
+      <y>20</y>
+      <width>175</width>
       <height>41</height>
      </rect>
     </property>
@@ -471,7 +484,7 @@
       <rect>
        <x>10</x>
        <y>40</y>
-       <width>68</width>
+       <width>141</width>
        <height>19</height>
       </rect>
      </property>
@@ -553,6 +566,119 @@
      </property>
     </widget>
    </widget>
+   <widget class="QGroupBox" name="groupBox_4">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>270</y>
+      <width>431</width>
+      <height>241</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Option</string>
+    </property>
+    <widget class="QLineEdit" name="tTC">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>160</y>
+       <width>111</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0,1,2,3,4,5,6,7</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="cbTC">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>160</y>
+       <width>131</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Testing case</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="cb3DC">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>201</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>3D Distance Calculate</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="cbFM">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>70</y>
+       <width>201</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Feature Matching</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="cbLDS">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>130</y>
+       <width>201</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Load Default Setting</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="cbDis">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>100</y>
+       <width>131</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Display</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="cam">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>175</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Camera</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -560,12 +686,12 @@
      <x>0</x>
      <y>0</y>
      <width>848</width>
-     <height>31</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuCDHEE">
     <property name="title">
-     <string>VDHEE</string>
+     <string>Human Entry/Exit</string>
     </property>
    </widget>
    <addaction name="menuCDHEE"/>

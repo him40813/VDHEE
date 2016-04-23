@@ -5,12 +5,24 @@ videoProcess::videoProcess(Ui::MainWindow *m,cv::VideoCapture v)
 {
     setVid(v);
     this->m=m;
-    //cin=m->cin->text().toInt();
-    cin=24;
+    cin=m->cin->text().toInt();
     cout=m->cout->text().toInt();
-    testType=0;
+    testType=-1;
+
+
     setupRange=false;
-    endOfTest=false;
+
+    if (m->cbTC->isChecked()){
+        QStringList tempListTest=m->tTC->text().split(',');
+        foreach( QString str, tempListTest) {
+            testCase.push_back(str.toInt());
+            std::cout<<str.toInt()<<endl;
+        }
+        testType=testCase.at(0);
+        testCase.erase(testCase.begin());
+
+    }
+
 }
 
 void videoProcess::setVid(cv::VideoCapture v)
@@ -135,8 +147,13 @@ void videoProcess::process()
     //Create Object
     d=new display(m,"main");
 
-    if (!testType)
+    if (testType<=0)
         gp=new GroundPlane();
+    if (m->cbLDS->isChecked()){
+        gp->readCameraMatrix("defaultSetting.xml");
+        gp->readGroundParam("defaultSetting.xml");
+        setupRange=true;
+    }
 
     b=new BFM(h,w,m->bgf->text().toInt(),m->bff->text().toInt(),d);
     //ffm=new FFM(d,m->r->text().toInt(),m->d->text().toInt(),cout,gp);
@@ -148,7 +165,6 @@ void videoProcess::process()
         ffm=new FFM(d,8,16,cout,gp);
         ffm->calDisType=0;
         ffm->matchType=0;
-        endOfTest=true;
     }else if (testType==1){
         ffm=new FFM(d,18,36,cout,gp);
         ffm->calDisType=1;
@@ -177,7 +193,26 @@ void videoProcess::process()
         ffm=new FFM(d,36,37,cout,gp);
         ffm->calDisType=1;
         ffm->matchType=1;
-        endOfTest=true;
+    }else{//defualt
+        if (m->cb3DC->isChecked()){
+            ffm=new FFM(d,36,37,cout,gp);
+            ffm->calDisType=1;
+            std::cout<<"3d";
+        }else{
+            //ffm=new FFM(d,m->r->text().toInt(),m->d->text().toInt(),cout,gp);
+            ffm=new FFM(d,16,16,cout,gp);
+            ffm->calDisType=0;
+            std::cout<<"2d";
+        }
+
+        if (m->cbFM->isChecked()){
+            ffm->matchType=1;
+            std::cout<<"matching"<<endl;
+        }else{
+            ffm->matchType=0;
+            std::cout<<"non-matching"<<endl;
+        }
+
     }
     //old RD
     //ffm=new FFM(d,36,36,cout,gp);
@@ -212,8 +247,8 @@ void videoProcess::process()
             base();
 
             end=cv::getTickCount();
-            timeu+=(double)(end-start)/cv::getTickFrequency();
-            d->setFps(std::ceil(n/timeu));
+            timeu=(double)(end-start)/cv::getTickFrequency();
+            d->setFps(std::ceil(1.0/timeu));
         }
 
         if (cv::waitKey(1)>=27){//check if esc + delay for 30milisec
@@ -222,25 +257,29 @@ void videoProcess::process()
 
         if (endOfVid)
         {
-            readCheckingFile("41.xml");
-            saveMatToCsvDouble(exelStat,"exelStat-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
-            saveMatToCsv(exel1,"exel1-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
-            saveMatToCsv(exel2,"exel2-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
-            saveMatToCsv(exel3,"exel3-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
-            saveMatToCsv(exel4,"exel4-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
-            exel1.release();
-            exel2.release();
-            exel3.release();
-            exel4.release();
-            exelStat.release();
+            if (m->cbTC->isChecked()){
+                readCheckingFile("41.xml");
+                saveMatToCsvDouble(exelStat,"exelStat-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+                saveMatToCsv(exel1,"exel1-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+                saveMatToCsv(exel2,"exel2-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+                saveMatToCsv(exel3,"exel3-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+                saveMatToCsv(exel4,"exel4-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+                exel1.release();
+                exel2.release();
+                exel3.release();
+                exel4.release();
+                exelStat.release();
+            }
             break;
         }
 
 
     }
 
-    if (!endOfTest){
-        ++testType;
+    if (!testCase.empty()){
+
+        testType=testCase.at(0);
+        testCase.erase(testCase.begin());
         vid.set(CV_CAP_PROP_POS_MSEC,0);
         setupRange=true;
         n=0;

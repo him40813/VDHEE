@@ -19,7 +19,7 @@
 #include <QFileDialog>
 #include <fstream>
 #include <QObject>
-
+#include <QStringList>
 
 class videoProcess
 {
@@ -61,7 +61,7 @@ private:
     cv::Ptr<FFM> ffm;
     cv::Ptr<GroundPlane> gp;
     cv::Ptr<display> d;
-    std::vector<int> checkList;
+    std::vector<int> checkList,testCase;
     int h;
     int w;
     int n;//number of frame

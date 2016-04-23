@@ -28,7 +28,7 @@ public:
     void setFrame(int n);
 
 private slots:
-
+    void on_cam_clicked();
 
     void on_choose_clicked();
     void vidUIChange(bool run);

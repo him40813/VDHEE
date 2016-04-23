@@ -6,7 +6,7 @@ display::display(Ui::MainWindow *m,std::string axisName)
     this->axisName=axisName;
     cv::namedWindow(axisName,CV_WINDOW_NORMAL);
     cv::resizeWindow(axisName, 960, 720);
-    nonShow=true;
+    nonShow=!m->cbDis->isChecked();
 }
 
 
@@ -73,7 +73,7 @@ void display::showIm()
 //Setter Param number Label
 void display::setFrameN(int value)
 {
-    frameN = QString::fromStdString("Frame# "+tools::int2str(value));
+    frameN = QString::fromStdString("Frame# ")+tools::num2str(value);
 }
 void display::setFps(int value)
 {
@@ -103,6 +103,7 @@ void display::setMfm(int value)
 {
     mfm = QString::fromStdString("MFM: "+tools::int2str(value));
 }
+
 
 
 

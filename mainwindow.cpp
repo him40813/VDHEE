@@ -33,7 +33,7 @@ void MainWindow::on_choose_clicked()
 
         vidUIChange(true);
         //reCalculate R and D for resolution
-        this->h=vid.get(CV_CAP_PROP_FRAME_HEIGHT);
+        this->h=vid.get(CV_CAP_PROP_FRAME_HEIGHT);//bug with wmv
         this->framerate=vid.get(CV_CAP_PROP_FPS);
         on_dis_textChanged(ui->dis->text());
         //create function process video
@@ -107,6 +107,26 @@ void MainWindow::on_dis_textChanged(const QString &arg1)
         ui->r->setText(tools::num2str(round(R)));
         ui->d->setText(tools::num2str(round(D)));
     }
+}
+
+
+void MainWindow::on_cam_clicked()
+{
+    cv::VideoCapture vid(ui->tCID->text().toInt());
+
+    vidUIChange(true);
+    //reCalculate R and D for resolution
+    this->h=vid.get(CV_CAP_PROP_FRAME_HEIGHT);
+    this->framerate=vid.get(CV_CAP_PROP_FPS);
+    on_dis_textChanged(ui->dis->text());
+    //create function process video
+
+    vp=new videoProcess(ui,vid);
+//        tools::setWH(vid.get(CV_CAP_PROP_FRAME_WIDTH),vid.get(CV_CAP_PROP_FRAME_HEIGHT));
+    //process
+    vp->process();
+
+    vidUIChange(false);
 }
 
 

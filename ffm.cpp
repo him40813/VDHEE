@@ -49,7 +49,7 @@ bool FFM::updateForeground(int i,int nea){
         int tempDistance=calDis(curr.at(i).pt,start.at(i).pt);
         int temp4MaxDis=calDis2d(curr.at(i).pt,start.at(i).pt);
         if (tempDistance>D || start.at(i).size>0){
-            start.at(i).size=6;
+            start.at(i).size==mResist;
             mf.at(i)=1;
             if (temp4MaxDis>maxMovingDistance){
                 maxMovingDistance=temp4MaxDis;
