@@ -43,13 +43,57 @@ void display::drawTrueMask(cv::Mat mask,cv::Scalar color,bool check){
 void display::drawLine(std::vector<cv::KeyPoint> start,std::vector<cv::KeyPoint> curr,bool check){
     if (check){
         for (int i=0;i<curr.size();i++){
-            cv::line(im,curr.at(i).pt,start.at(i).pt,cv::Scalar(0,0,255));
+
+            cv::line(im,curr.at(i).pt,start.at(i).pt,cv::Scalar(0,(start.at(i).size<=0?0:255),255));
         }
     }
 }
 
-void display::showIm()
-{
+void display::drawLineTempCurr(std::vector<std::vector<cv::KeyPoint> > tempCurr,std::vector<cv::KeyPoint> start,bool check){
+    if (check){
+        for (int i=0;i<tempCurr.size();i++){
+            cv::Point lastest=tempCurr.at(i).at(0).pt;
+
+            for (int j=1;j<tempCurr.at(i).size();j+=10){
+
+                cv::line(im,lastest,tempCurr.at(i).at(j).pt,cv::Scalar(0,(start.at(i).size<=0?0:255),255));
+                lastest=tempCurr.at(i).at(j).pt;
+            }
+            cv::line(im,lastest,tempCurr.at(i).at(tempCurr.at(i).size()-1).pt,cv::Scalar(0,(start.at(i).size<=0?0:255),255));
+        }
+
+
+    }
+}
+
+void display::drawEntry(int hNum,std::vector<cv::KeyPoint> start,std::vector<cv::KeyPoint> curr,bool human,bool check){
+    if (!start.empty() && human){
+        int top=480;
+        cv::Point showPt;
+        for (int i=0;i<start.size();++i){
+            if (start.at(i).size>0){
+                if (top>curr.at(i).pt.y){
+                    top=curr.at(i).pt.y;
+                    showPt=curr.at(i).pt;
+                }
+
+
+            }
+        }
+
+
+        showPt.x-=showPt.x>=30?30:0;
+        showPt.y-=showPt.y>=30?30:0;
+        putText(im, "Entry ! #"+tools::int2str(hNum), showPt,
+            CV_FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(0,255,255), 1, CV_AA);
+
+
+
+
+    }
+}
+
+void display::showIm(){
     if (!im.empty() && !nonShow)
     {
         imshow(axisName,im);

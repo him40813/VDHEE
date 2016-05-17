@@ -21,6 +21,7 @@ public:
     void calBGM(std::vector<std::vector<cv::KeyPoint> > BG);
     void setNumber(int bg,int bf);
     void add(std::vector<cv::KeyPoint> f,int n,bool human);
+    void releaseGap();
     cv::Mat getForeground(cv::Mat currMat);
     int cff,fff;
 

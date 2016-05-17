@@ -5,6 +5,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include "tools.h"
+#include <iostream>
 
 class display
 {
@@ -14,7 +15,8 @@ public:
     void drawMask(cv::Mat mask,cv::Scalar color,bool check);
     void drawTrueMask(cv::Mat mask,cv::Scalar color,bool check);
     void drawLine(std::vector<cv::KeyPoint> start,std::vector<cv::KeyPoint> curr,bool check);
-
+    void drawLineTempCurr(std::vector<std::vector<cv::KeyPoint> > tempCurr,std::vector<cv::KeyPoint> start,bool check);
+    void drawEntry(int hNum,std::vector<cv::KeyPoint> start,std::vector<cv::KeyPoint> curr,bool human,bool check);
     void showIm();
 
     //Setter

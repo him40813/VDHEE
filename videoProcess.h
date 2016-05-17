@@ -54,7 +54,7 @@ private:
     bool endOfTest;
 
     cv::Mat frame,realFrame,FF;
-    cv::Mat checkFile,exel1,exel2,exel3,exelStat,exel4;
+    cv::Mat checkFile,exel1,exel2,exel3,exelStat,exel4,exel5,exel6;
     std::vector<cv::KeyPoint> curr;
     Ui::MainWindow *m;
     cv::Ptr<BFM> b;

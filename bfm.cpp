@@ -74,4 +74,9 @@ void BFM::calBGM(std::vector<std::vector<cv::KeyPoint> > BG){
     return cv::Mat();
  }
 
+ void BFM::releaseGap(){
+
+        std::copy(BG.begin(),BG.begin()+bfn,BF.begin());
+ }
+
 

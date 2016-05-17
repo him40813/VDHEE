@@ -49,12 +49,13 @@ bool FFM::updateForeground(int i,int nea){
         int tempDistance=calDis(curr.at(i).pt,start.at(i).pt);
         int temp4MaxDis=calDis2d(curr.at(i).pt,start.at(i).pt);
         if (tempDistance>D || start.at(i).size>0){
-            start.at(i).size==mResist;
+            start.at(i).size=mResist;
             mf.at(i)=1;
             if (temp4MaxDis>maxMovingDistance){
                 maxMovingDistance=temp4MaxDis;
             }
         }
+        tempCurr.at(i).push_back(curr.at(i));
     }else{
         curr.at(i).size-=1;
         start.at(i).size-=1;
@@ -66,6 +67,8 @@ bool FFM::updateForeground(int i,int nea){
         }
 
     }
+
+
 }
 
 int FFM::getMFCount(){
@@ -84,8 +87,13 @@ void FFM::addNewSFF(cv::Mat nz){
             curr.push_back(cv::KeyPoint(ffPos,cResist));
             currDes.push_back(Mat::zeros(1,64,currDes.type()));
             mf.push_back(0);
+            //tempcurr
+            vector<KeyPoint> temptempCurr;
+            temptempCurr.push_back(cv::KeyPoint(ffPos,0));
+            tempCurr.push_back(temptempCurr);
         }
     }
+
 
     if (matchType){
 
@@ -99,12 +107,14 @@ void FFM::deleteFF(){
     std::vector<cv::KeyPoint> curr2;
     std::vector<int> mf2;
     Mat currDesTemp;
+    vector<vector<KeyPoint> > tempCurr2;
     for (int i=0;i<start.size();i++){
         if (std::find(del.begin(),del.end(),i)==del.end()){
             start2.push_back(start.at(i));
             curr2.push_back(curr.at(i));
             mf2.push_back(mf.at(i));
             currDesTemp.push_back(currDes.row(i));
+            tempCurr2.push_back(tempCurr.at(i));
         }
     }
 
@@ -112,7 +122,7 @@ void FFM::deleteFF(){
     start=start2;
     curr=curr2;
     mf=mf2;
-
+    tempCurr=tempCurr2;
 }
 
 int FFM::findNearest(cv::Point x,cv::Mat nz){
@@ -345,6 +355,7 @@ void FFM::clearNSort(){
         if (mf.at(i)==1){
             std::swap(curr.at(si),curr.at(i));
             std::swap(start.at(si),start.at(i));
+            std::swap(tempCurr.at(si),tempCurr.at(i));
             if (matchType){
                 Mat temp=currDes.row(si);
                 currDes.row(si)=currDes.row(i);
@@ -358,6 +369,7 @@ void FFM::clearNSort(){
        if (curr.at(j).size==cResist-1){
                     std::swap(curr.at(si),curr.at(j));
                     std::swap(start.at(si),start.at(j));
+                    std::swap(tempCurr.at(si),tempCurr.at(j));
                     if (matchType){
                         Mat temp=currDes.row(si);
                         currDes.row(si)=currDes.row(j);

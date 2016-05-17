@@ -292,7 +292,7 @@
       <string>MF Line</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="chkCurr">
+    <widget class="QCheckBox" name="chkEnt">
      <property name="geometry">
       <rect>
        <x>200</x>
@@ -302,7 +302,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Current F</string>
+      <string>Entry</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="chkR">

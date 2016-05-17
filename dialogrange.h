@@ -41,6 +41,8 @@ public:
 
     Ptr<GroundPlane> gp;
 
+    void draw3DRadius(QPoint p);
+    void showPointRadius(QPoint p);
 
 private slots:
     void on_cdButton_clicked();
@@ -67,13 +69,15 @@ private slots:
 
     void on_buttonBox_accepted();
 
+
+
 private:
     Ui::DialogRange *ui;
 
     void setStatusLb(const string x,bool success);
 
     bool *p;
-
+    Mat im;
 };
 
 #endif // DIALOGRANGE_H

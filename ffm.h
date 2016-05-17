@@ -47,7 +47,7 @@ public:
     Mat nz;
     cv::Ptr<GroundPlane> gp;
     double calDis3D(cv::Point xx1,cv::Point xx2);
-
+    vector<vector<KeyPoint> > tempCurr;
 
     Ptr<xfeatures2d::SURF> surf;
 

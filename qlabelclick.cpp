@@ -5,7 +5,8 @@
 void QLabelClick::mousePressEvent( QMouseEvent* ev )
 {
     const QPoint p = ev->pos();
-    //d->setHMLPos(p);
+    d->draw3DRadius(p);
+    std::cout<<"click"<<std::endl;
 }
 
 QLabelClick::QLabelClick( QWidget * parent, Qt::WindowFlags f )

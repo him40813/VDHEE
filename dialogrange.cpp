@@ -18,6 +18,7 @@ DialogRange::~DialogRange()
 void DialogRange::setImageMat(cv::Mat im,VideoCapture vid,Ptr<GroundPlane> gp,bool *p){
     this->vid=vid;
     this->p=p;
+    this->im=im;
     QImage qim=tools::Mat2QImage(im);
     int imh=qim.height();
     int imw=qim.width();
@@ -179,4 +180,52 @@ void DialogRange::on_sspBut_clicked()
 void DialogRange::on_buttonBox_accepted()
 {
     *p=!(*p);
+}
+
+
+void DialogRange::draw3DRadius(QPoint p){
+    //Point3d center =gp->getPointAtGround(p);
+    Vec3b red = Vec3b(0,0,255);
+    Vec3b yellow =Vec3b(0,255,255);
+
+    for (int i=0;i<im.rows;++i){
+        for (int j=0;j<im.cols;++j){
+            //Point3d temp=gp->getPointAtGround(Point(j,i));
+            double dis=gp->calDis3DFrom2D(Point(p.x(),p.y()),Point(j,i));
+
+
+            if (dis<36 ){//dis 36
+                im.at<Vec3b>(Point(j,i)) = yellow;
+            }
+//            if (dis<19 ){//dis 18
+//                im.at<Vec3b>(Point(j,i)) = red;
+//            }
+        }
+    }
+
+    circle(im,Point(p.x(),p.y()),9,Scalar(0,0,255),1,LINE_8);
+    circle(im,Point(p.x(),p.y()),18,Scalar(0,0,0),1,LINE_8);
+
+    //center
+    circle(im,Point(p.x(),p.y()),1,Scalar(0,0,255),1,LINE_8);
+    QImage qim=tools::Mat2QImage(im);
+    ui->imgLabel->setPixmap(QPixmap::fromImage(qim));
+
+    cv::namedWindow("Test Radius",CV_WINDOW_NORMAL);
+    Mat imGray;
+    cvtColor(im,imGray, CV_BGR2GRAY);
+    imshow("Test Radius",imGray);
+}
+
+void DialogRange::showPointRadius(QPoint p){
+    circle(im,Point(p.x(),p.y()),1,Scalar(0,0,255),1,LINE_8);
+    circle(im,Point(p.x(),p.y()),9,Scalar(0,0,255),1,LINE_8);
+    circle(im,Point(p.x(),p.y()),18,Scalar(255,0,0),1,LINE_8);
+    QImage qim=tools::Mat2QImage(im);
+    ui->imgLabel->setPixmap(QPixmap::fromImage(qim));
+
+    cv::namedWindow("Test Radius",CV_WINDOW_NORMAL);
+    Mat imGray;
+    cvtColor(im,imGray, CV_BGR2GRAY);
+    imshow("Test Radius",imGray);
 }

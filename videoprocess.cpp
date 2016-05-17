@@ -8,7 +8,7 @@ videoProcess::videoProcess(Ui::MainWindow *m,cv::VideoCapture v)
     cin=m->cin->text().toInt();
     cout=m->cout->text().toInt();
     testType=-1;
-
+    human=false;
 
     setupRange=false;
 
@@ -33,6 +33,12 @@ void videoProcess::setVid(cv::VideoCapture v)
 
 //Main Function Each Lopp--------------------------------------------------------------------------------------------------------------
 int videoProcess::base(){
+//    if (n==500)
+//        p=true;
+//    if (n==4561)
+//        p=true;
+//    if (n==4700)
+//        p=true;
 
 
 
@@ -57,6 +63,15 @@ int videoProcess::base(){
         p=true;
     }
 
+    int allBFMN=m->bff->text().toInt()+m->bgf->text().toInt();
+    if (n<allBFMN){
+        m->StatLabel->setText(QString::fromStdString("Setup BFM:"+tools::int2str(n*100/allBFMN)+"%"));
+        m->StatLabel->setStyleSheet("QLabel { color : red; }");
+    }else if (n==allBFMN){
+        m->StatLabel->setText(QString::fromStdString("Ready"));
+        m->StatLabel->setStyleSheet("QLabel { color : green; }");
+    }
+
 //core System-----------------------------------------------------------------------------
     b->add(curr,n,human);
     FF=tools::key2Mat(curr,h,w);
@@ -64,6 +79,7 @@ int videoProcess::base(){
     ffm->clearNSort();
     ffm->process(FF,frame);
     int test=ffm->getMFCount();
+
     if (test>0){
         cIn++;
     }
@@ -74,6 +90,7 @@ int videoProcess::base(){
         human=true;
         countIn++;
         m->StatLabel->setText(QString::fromStdString("Entry: "+tools::int2str(countIn)));
+        m->StatLabel->setStyleSheet("QLabel { color : red; }");
         exel1.push_back(n);
         exel2.push_back(test);
     }else if(cIn>cin){
@@ -96,6 +113,9 @@ int videoProcess::base(){
         //average max moving feature
         exel3.push_back(ffm->maxMovingDistance);
         ffm->maxMovingDistance=-1;
+        b->releaseGap();
+        m->StatLabel->setText(QString::fromStdString("Exit: "+tools::int2str(countIn)));
+        m->StatLabel->setStyleSheet("QLabel { color : green; }");
     }
     d->setMfm(ffm->getSFCount());
     d->setMfm(ffm->getMFCount());
@@ -106,7 +126,9 @@ int videoProcess::base(){
 //footer----------------------------------------------------------------------------------
     d->drawTrueMask(b->result,cv::Scalar(1,255,1),m->chkBGM->isChecked());
     d->drawMask(b->Foreground,cv::Scalar(1,1,255),m->chkFF->isChecked());
-    d->drawLine(ffm->start,ffm->curr,m->chkLine->isChecked());
+    //d->drawLine(ffm->start,ffm->curr,m->chkLine->isChecked());
+    d->drawLineTempCurr(ffm->tempCurr,ffm->start,m->chkLine->isChecked());
+    d->drawEntry(countIn,ffm->start,ffm->curr,human,m->chkEnt->isChecked());
     d->setBg(b->BG.size());
     d->setBf(b->BF.size());
     d->setCff(b->cff);
@@ -200,7 +222,7 @@ void videoProcess::process()
             std::cout<<"3d";
         }else{
             //ffm=new FFM(d,m->r->text().toInt(),m->d->text().toInt(),cout,gp);
-            ffm=new FFM(d,16,16,cout,gp);
+            ffm=new FFM(d,30,30,cout,gp);
             ffm->calDisType=0;
             std::cout<<"2d";
         }
@@ -249,6 +271,10 @@ void videoProcess::process()
             end=cv::getTickCount();
             timeu=(double)(end-start)/cv::getTickFrequency();
             d->setFps(std::ceil(1.0/timeu));
+
+            exel5.push_back(std::ceil(1.0/timeu));
+            if (human)
+                exel6.push_back(std::ceil(1.0/timeu));
         }
 
         if (cv::waitKey(1)>=27){//check if esc + delay for 30milisec
@@ -264,11 +290,16 @@ void videoProcess::process()
                 saveMatToCsv(exel2,"exel2-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
                 saveMatToCsv(exel3,"exel3-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
                 saveMatToCsv(exel4,"exel4-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+                saveMatToCsv(exel5,"exel5-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
+                saveMatToCsv(exel6,"exel6-case"+tools::int2str(testType)+"-"+tools::int2str(ffm->calDisType)+tools::int2str(ffm->matchType)+".csv");
                 exel1.release();
                 exel2.release();
                 exel3.release();
                 exel4.release();
+                exel5.release();
+                exel6.release();
                 exelStat.release();
+
             }
             break;
         }
@@ -389,8 +420,20 @@ bool videoProcess::readCheckingFile(const string x){
             exelStat.push_back(stat4);
 
             std::cout<<count2<<","<<(n-checkList.size())<<",avg: "<<count2/(n-checkList.size())<<endl;
-            Mat stat5=(Mat_<double>(1,3) << (double)countIn,0,0);
+            Mat stat5=(Mat_<double>(1,3) << (double)0,0,countIn);
             exelStat.push_back(stat5);
+
+            std::cout<<exel5.rows<<","<<n<<",avg: "<<mean(exel5)<<endl;
+            double mini,maxi;
+            minMaxIdx(exel5,&mini,&maxi);
+            Mat stat6=(Mat_<double>(1,3) << mini,maxi,(double)mean(exel5).val[0]);
+            exelStat.push_back(stat6);
+
+            std::cout<<exel6.rows<<","<<n<<",avg: "<<mean(exel6)<<endl;
+            double mini2,maxi2;
+            minMaxIdx(exel6,&mini2,&maxi2);
+            Mat stat7=(Mat_<double>(1,3) << mini2,maxi2,(double)mean(exel6).val[0]);
+            exelStat.push_back(stat7);
 
         }
         fs.release();
